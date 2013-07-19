@@ -13,7 +13,7 @@ Works on Windows and Linux. Compile with VS2010 or better, or a C++11 compliant 
     void some_function();
 
     printf("some_function takes %.1fms to execute\n",
-        moodycamel::microbench(some_function)
+        moodycamel::microbench(&some_function)
     );
 
 ## Detailed Example
