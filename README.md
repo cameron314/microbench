@@ -12,7 +12,7 @@ Works on Windows and Linux. Compile with VS2010 or better, or a C++11 compliant 
         moodycamel::microbench(some_function)
     );
 
-# Detailed Example
+## Detailed Example
 
     // GCC command-line: g++ -std=c++11 -DNDEBUG -O3 -lrt main.cpp microbench/systemtime.cpp -o bench
 
@@ -41,5 +41,5 @@ icky platform-specific high-resolution timer routines and bothersome boilerplate
 
 ## License
 
-Released under the [simplified BSD license](https://github.com/cameron314/microbench/LICENSE.md).
+Released under the [simplified BSD license](https://github.com/cameron314/microbench/blob/master/LICENSE.md).
 
