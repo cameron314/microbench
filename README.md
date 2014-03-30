@@ -3,7 +3,7 @@
 Provides a dead-simple micro-benchmarking function for C++. Executes a given function
 some number of times per test run, and returns the time it took for the fastest test run to execute.
 
-Works on Windows and Linux. Compile with VS2010 or better, or a C++11 compliant compiler (e.g. gcc 4.7+).
+Works on Windows, Linux, and Mac OS X. Compile with VS2010 or better, or a C++11 compliant compiler (e.g. gcc 4.7+).
 
 ## Basic Example
 

@@ -1,3 +1,5 @@
+// ©2013-2014 Cameron Desrochers
+
 #include "systemtime.h"
 #include <climits>
 
@@ -54,6 +56,45 @@ double getTimeDelta(SystemTime start)
 
 }  // end namespace moodycamel
 
+#elif defined(ST_APPLE)
+
+#include <mach/mach.h>
+#include <mach/mach_time.h>
+#include <unistd.h>
+#include <time.h>
+
+namespace moodycamel
+{
+
+void sleep(int milliseconds)
+{
+	::usleep(milliseconds * 1000);
+}
+
+SystemTime getSystemTime()
+{
+	CompilerMemBar();
+	std::uint64_t result = mach_absolute_time();
+	CompilerMemBar();
+	
+	return result;
+}
+
+double getTimeDelta(SystemTime start)
+{
+	CompilerMemBar();
+	std::uint64_t end = mach_absolute_time();
+	CompilerMemBar();
+
+	mach_timebase_info_data_t tb = { 0 };
+	mach_timebase_info(&tb);
+	double toNano = static_cast<double>(tb.numer) / tb.denom;
+	
+	return static_cast<double>(end - start) * toNano * 0.000001;
+}
+
+}  // end namespace moodycamel
+
 #elif defined(ST_NIX)
 
 #include <unistd.h>
@@ -83,7 +124,7 @@ double getTimeDelta(SystemTime start)
 {
 	timespec t;
 	CompilerMemBar();
-	if (start.tv_sec == (time_t)-1 && start.tv_nsec == -1 || clock_gettime(CLOCK_MONOTONIC_RAW, &t) != 0) {
+	if ((start.tv_sec == (time_t)-1 && start.tv_nsec == -1) || clock_gettime(CLOCK_MONOTONIC_RAW, &t) != 0) {
 		return -1;
 	}
 	CompilerMemBar();
