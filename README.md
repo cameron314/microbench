@@ -19,6 +19,7 @@ Works on Windows, Linux, and Mac OS X. Compile with VS2010 or better, or a C++11
 ## Detailed Example
 
     // GCC command-line: g++ -std=c++11 -DNDEBUG -O3 -lrt main.cpp microbench/systemtime.cpp -o bench
+    // (omit -lrt if on Windows or Mac OS X)
 
     #include "microbench/microbench.h"
     #include <cstdio>
@@ -26,15 +27,36 @@ Works on Windows, Linux, and Mac OS X. Compile with VS2010 or better, or a C++11
 
     std::atomic<int> x(0);
     int y = 0;
-    printf("CAS takes %.4fms to execute 100000 iterations\n",
+    printf("CAS takes %.4fns on average\n",
         moodycamel::microbench(
             [&]() { x.compare_exchange_strong(y, 0); },  /* function to benchmark */
             100000, /* iterations per test run */
-            20 /* number of test runs */
-        )
+            20, /* number of test runs */
+            true /* whether to use the average time per iteration (the default) or total time per run (pass false) */
+        ) * 1000 * 1000    // ms -> ns
     );
+    
+    // Result in my environment: Clocks in at ~24ns per CAS operation
+    
+## Moar statistics
 
-    // Result: Clocks in at 1.2ms (12ns per CAS operation) in my environment
+`microbench` can also give you the minimum, maximum, range, quartiles, median, mean, and standard deviation
+if you're feeling particularly peckish. Example:
+
+    std::atomic<int> x(0);
+    int y = 0;
+    moodycamel::stats_t stats =
+        moodycamel::microbench_stats([&]() { x.compare_exchange_strong(y, 0); }, 100000, 20);
+    printf("CAS statistics: avg: %.2fns, min: %.2fns, max: %.2fns, stddev: %.2fns, Q1: %.2fns, median: %.2fns, Q3: %.2fns\n",
+        stats.avg() * 1000 * 1000,
+        stats.min() * 1000 * 1000,
+        stats.max() * 1000 * 1000,
+        stats.stddev() * 1000 * 1000,
+        stats.q1() * 1000 * 1000,
+        stats.median() * 1000 * 1000,
+        stats.q3() * 1000 * 1000);
+        
+    // Result in my environment: avg: 26.47ns, min: 24.12ns, max: 32.98ns, stddev: 3.07ns, Q1: 24.15ns, median: 24.64ns, Q3: 30.19ns
 
 ## Why?
 
@@ -47,4 +69,3 @@ icky platform-specific high-resolution timer routines and bothersome boilerplate
 ## License
 
 Released under the [simplified BSD license](https://github.com/cameron314/microbench/blob/master/LICENSE.md).
-
