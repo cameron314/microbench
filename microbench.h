@@ -72,7 +72,7 @@ namespace moodycamel
 		inline double q1() const { return _q[0]; }
 		inline double q2() const { return _q[1]; }
 		inline double q3() const { return _q[2]; }
-		inline double q(std::size_t which) const { assert(q < 4 && q > 0); return _q[which - 1]; }
+		inline double q(std::size_t which) const { assert(which < 4 && which > 0); return _q[which - 1]; }
 		
 	private:
 		double _min;
